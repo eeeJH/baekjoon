@@ -24,6 +24,7 @@ public class _17142 {
 	static int[][] Arr = new int[50][50];
 	static Point[] Virus = new Point[10];
 	static int VirusCnt;
+	
 	// row
 	static int[] dr = { -1, 1, 0, 0 };
 	// column
@@ -44,7 +45,13 @@ public class _17142 {
 				}
 
 			}
+			
+			System.out.print(i);
 		}
+		
+		
+		
+		sc.close();
 
 		System.out.println(solve());
 	}
