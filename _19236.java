@@ -10,6 +10,9 @@ public class _19236 {
 	static int[] dir = { 1, 2, 3, 4, 5, 6, 7, 8 };
 	static int[][] fishMap = new int[4][4];
 	static int[][] dir_fishMap = new int[4][4];
+	static LinkedList<Shark> list = new LinkedList<>();
+
+	static Shark cur_shark = new Shark();
 
 	static int[] dir_y = { -1, -1, 0, 1, 1, 1, 0, -1 };
 	static int[] dir_x = { 0, -1, -1, -1, 0, 1, 1, 1 };
@@ -22,10 +25,10 @@ public class _19236 {
 	static int cur_fish_x = 0;
 	static int cur_fish_dir = 0;
 
-	// 상어가 먹을 수 있는 물고기 번호의 합의 최댓값을 구해보자. dfs?
+	// 상어가 먹을 수 있는 물고기 번호의 합의 최댓값을 구해보자.
 	// 상어가 이동할 있는 경우는
 	// 상어 방향에 물고기가 없거나, map을 벗어난 경우
-	// 이동방향에 여러개의 물고기가 있으면 하나씩 들어간다.(dfs)
+	// 이동방향에 여러개의 물고기가 있으면 하나씩 들어간다.
 
 	public static void main(String arg[]) {
 		Scanner sc = new Scanner(System.in);
@@ -41,9 +44,9 @@ public class _19236 {
 		shark.dir = dir_fishMap[0][0];
 		shark.y = 0;
 		shark.x = 0;
+		shark.point = fishMap[0][0];
 		fishMap[0][0] = 0;
-
-		shark.point += fishMap[0][0];
+		dir_fishMap[0][0] = 0;
 
 		solve(shark);
 
@@ -110,18 +113,17 @@ public class _19236 {
 					continue;
 				}
 
-				int temp_fish, temp_dir = 0;
+				int temp_fish = 0;
 
 				temp_fish = fishMap[new_fish_y][new_fish_x];
 				fishMap[new_fish_y][new_fish_x] = fishMap[cur_fish_y][cur_fish_x];
 				fishMap[cur_fish_y][cur_fish_x] = temp_fish;
 
-				temp_dir = dir_fishMap[new_fish_y][new_fish_x];
-				dir_fishMap[new_fish_y][new_fish_x] = dir_fishMap[cur_fish_y][cur_fish_x];
-				dir_fishMap[cur_fish_y][cur_fish_x] = temp_dir;
+				dir_fishMap[cur_fish_y][cur_fish_x] = dir_fishMap[new_fish_y][new_fish_x];
+				dir_fishMap[new_fish_y][new_fish_x] = dir[index];
 
 				System.out.println(
-						"fishNumber : " + fishNumber + "  new_fish_y : " + new_fish_y + " new_fish_x : " + new_fish_y);
+						"fishNumber : " + fishNumber + "  new_fish_y : " + new_fish_y + " new_fish_x : " + new_fish_x + " dir  :   " + dir_fishMap[new_fish_y][new_fish_x]);
 				System.out.println();
 				print();
 				System.out.println();
@@ -135,13 +137,9 @@ public class _19236 {
 	}
 
 	public static void solve(Shark shark) {
-
-		// 물고기 움직이고
-		fishMove(1, shark);
-
-		// 상어가 움직인다.
-		// 상어 방향이 물고기가 몇마리인지 확인한다. 물고기는 최대 3마리가 존재
-		// 물고기가 없으면 종료
+		System.out.println(" - shark 상어 방향  :  " + shark.dir);
+		System.out.println(" - shark 상어 좌표  :  " + "y  :  " + shark.y + "  x  :  " + shark.x);
+		System.out.println(" - shark 상어 point  :  " + shark.point);
 
 		int[][] copy_fishMap = new int[4][4];
 		int[][] copy_dir_fishMap = new int[4][4];
@@ -158,27 +156,38 @@ public class _19236 {
 			}
 		}
 
+		// 물고기 움직이고
+		fishMove(1, shark);
+
+		// 상어가 움직인다.
+		// 상어 방향이 물고기가 몇마리인지 확인한다. 물고기는 최대 3마리가 존재
+		// 물고기가 없으면 종료
+
 		System.out.println();
 		System.out.println("상어움직이자");
 		System.out.println();
+		
+		for (int i = 1; i <= 3; i++) {
 
-		Shark cur_shark = new Shark();
-		cur_shark = shark;
-
-		for (int i = 0; i < 3; i++) {
-
-			int new_shark_y = cur_shark.y + dir_y[cur_shark.dir - 1] + i;
-			int new_shark_x = cur_shark.x + dir_x[cur_shark.dir - 1] + i;
-
+			cur_shark.dir = shark.dir;
+			cur_shark.x = shark.x;
+			cur_shark.y = shark.y;
+			cur_shark.point = shark.point;
+			
+			int new_shark_y = cur_shark.y + dir_y[cur_shark.dir - 1] * i;
+			int new_shark_x = cur_shark.x + dir_x[cur_shark.dir - 1] * i;
+			System.out.println("new_shark_y  :  " + new_shark_y + "  new_shark_x  :  " + new_shark_x);
 			// 영역 벗어나면 continue
 			if (new_shark_y < 0 || new_shark_y > 3 || new_shark_x < 0 || new_shark_x > 3) {
-				break;
+				continue;
 			}
 
 			if (fishMap[new_shark_y][new_shark_x] == 0) {
-				break;
+				continue;
 			}
-			System.out.println("먹기 전");
+
+			System.out.println("먹기 전 - 상어 방향  :  " + cur_shark.dir);
+			System.out.println("먹기 전 - 상어 좌표  :  " + "y  :  " + cur_shark.y + "  x  :  " + cur_shark.x);
 			print();
 
 			int point = fishMap[new_shark_y][new_shark_x];
@@ -186,14 +195,18 @@ public class _19236 {
 			cur_shark.dir = dir_fishMap[new_shark_y][new_shark_x];
 			cur_shark.point += point;
 			fishMap[new_shark_y][new_shark_x] = 0;
+			dir_fishMap[new_shark_y][new_shark_x] = 0;
 			cur_shark.y = new_shark_y;
 			cur_shark.x = new_shark_x;
-			System.out.println("먹은 후");
+			System.out.println("먹은 후 - 상어 방향  :  " + cur_shark.dir);
+			System.out.println("먹기 후 - 상어 좌표  :  " + "y  :  " + cur_shark.y + "  x  :  " + cur_shark.x);
 			print();
 
 			solve(cur_shark);
 
-			cur_shark = shark;
+			System.out.println(" - shark 상어 방향  :  " + shark.dir);
+			System.out.println(" - shark 상어 좌표  :  " + "y  :  " + shark.y + "  x  :  " + shark.x);
+			System.out.println(" - shark 상어 point  :  " + shark.point);
 			
 			for (int y = 0; y < 4; y++) {
 				for (int x = 0; x < 4; x++) {
@@ -209,8 +222,10 @@ public class _19236 {
 
 		}
 
-		maxValue(shark.point);
+		System.out.println("끝");
+		print();
 
+		maxValue(shark.point);
 	}
 
 	public static void maxValue(int val) {
@@ -226,10 +241,5 @@ public class _19236 {
 			System.out.println();
 		}
 		System.out.println();
-		/*
-		 * System.out.println("dir_fishMap"); for (int y = 0; y < 4; y++) { for (int x =
-		 * 0; x < 4; x++) { System.out.print(dir_fishMap[y][x] + " "); }
-		 * System.out.println(); }
-		 */
 	}
 }
