@@ -1,4 +1,4 @@
-package code;
+package baekjoon;
 
 import java.io.IOException;
 import java.util.*;

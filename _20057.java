@@ -1,112 +1,86 @@
-package code;
+package baekjoon;
 
 import java.util.*;
 
 public class _20057 {
 
-	static int n, q, l, r, c;
 	static int[][] map;
-	static int cal_l;
-	static int[] magic;
+	static int n;
+
+	// 좌, 하, 오 ,위
+	static int[] dr = { 0, 1, 0, -1 };
+	static int[] dc = { -1, 0, 1, 0 };
+
+	// 토네이도 방향
+	// 좌, 하, 오, 위
+	// 1, 1, 1+1, 1+1, 1+1+1, 1+1+1, ....
+
+	static int[] dirY = { -2, -1, -1, -1, 0, 1, 1, 1, 2, 0 };
+	static int[] dirX = { 0, -1, 0, 1, -2, -1, 0, 1, 0, -1 };
+	static double[] percent = { 0.02, 0.1, 0.07, 0.01, 0.05, 0.1, 0.07, 0.01, 0.02, 1 };
+
+	static int result = 0;
 
 	public static void main(String arg[]) {
 		Scanner sc = new Scanner(System.in);
 		n = sc.nextInt();
-		q = sc.nextInt();
+		map = new int[n][n];
 
-		r = (int) Math.pow(2, n);
-		c = r;
-
-		map = new int[r][c];
-
-		for (int y = 0; y < r; y++) {
-			for (int x = 0; x < c; x++) {
+		for (int y = 0; y < n; y++) {
+			for (int x = 0; x < n; x++) {
 				map[y][x] = sc.nextInt();
 			}
 		}
 
-		magic = new int[q];
+		solve(n / 2, n / 2);
 
-		for (int i = 0; i < q; i++) {
-			magic[i] = sc.nextInt();
-		}
-
-		solve();
-
+		System.out.println(result);
 		sc.close();
 	}
 
-	public static void solve() {
-		for (int i = 0; i < q; i++) {
-			remake_MAP(1 << magic[i]);
-			
-			
-		}
-		
-		
-	}
+	public static void solve(int curY, int curX) {
 
-	public static void remake_MAP(int Len) {
-		for (int i = 0; i < r; i += Len) {
+		while (curY == 0 && curX == -1) {
+			int count = 1;
+			// 토네이도 4방향인데
+			// 좌, 하, 오 , 상
+			for (int dir = 0; dir < 4; dir++) {
 
-			for (int j = 0; j < c; j += Len) {
-				System.out.println("i : " + + i + "  j : " + j + "  Len : " + Len);
+				for (int cnt = 0; cnt < count; cnt++) {
+
+					curY = curY + dr[dir];
+					curX = curX + dc[dir];
+
+					int mod = 0;
+
+					for (int i = 0; i < 10; i++) {
+
+						map[curY + dirY[i]][curX + dirX[i]] += (int) (map[curY][curX] * percent[i]);
+						mod += (int) (map[curY][curX] * percent[i]);
+						if (i == 9) {
+							map[curY + dirY[i]][curX + dirX[i]] += map[curY][curX] - mod;
+						}
+
+					}
+				}
+
+				if (dir == 1) {
+					count++;
+				}
 				
-				rotation(i, j, Len);
 				
-				print();
+
 			}
+
 		}
+
 	}
 
-	// 돌리기
-	public static void rotation(int a, int b, int Len) {
-		// 돌려야 하는 사각형의 갯수
-		int SquareCount = Len / 2;
-		
-		
-		for (int Number = 0; Number < SquareCount; Number++) {
-			int Start_x = a + Number;
-			int Start_y = b + Number;
-			int End_x = a + Len - Number - 1;
-			int End_y = b + Len - Number - 1;
-
-			int x_Idx = End_x;
-			int y_Idx = Start_y;
-			int Idx = 0;
-
-			LinkedList<Integer> temp = new LinkedList<Integer>();
-			//Vector<Integer> temp = new Vector<Integer>();
-
-			for (int i = Start_x; i < End_x; i++) {
-				temp.add(map[i][Start_y]);
-			}
-			for (int i = Start_x; i < End_x; i++) {
-				map[i][Start_y] = map[End_x][y_Idx++];
-			}
-			for (int i = Start_y; i < End_y; i++) {
-				map[End_x][i] = map[x_Idx--][End_y];
-			}
-			for (int i = End_x; i > Start_x; i--) {
-				map[i][End_y] = map[Start_x][y_Idx--];
-			}
-			for (int i = End_y; i > Start_y; i--) {
-				map[Start_x][i] = temp.get(Idx++);
-			}
+	public static String fmt(double d) {
+		if (d == (long) d) {
+			return String.format("%d", (long) d);
+		} else {
+			return String.format("%d", d);
 		}
 	}
-
-	public static void print() {
-		System.out.println();
-		System.out.println();
-		for (int y = 0; y < r; y++) {
-			for (int x = 0; x < c; x++) {
-				System.out.print(map[y][x]);
-			}
-			System.out.println();
-		}
-		System.out.println();
-		System.out.println();
-	}
-
 }
