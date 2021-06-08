@@ -3,6 +3,6 @@ Algorithm Practice
 
 Language : 
 
-Node.js
+Javascript
 
 Java
