@@ -45,7 +45,6 @@ public class _9663 {
 		int count = 0;
 		for (int i = 0; i < N; i++) {
 			
-			// 놓을수 있으면
 			if(check(row, i)) {
 				
 				check_rigtDig[row + i] = true;
